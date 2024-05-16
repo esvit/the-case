@@ -1,0 +1,41 @@
+version: '3'
+services:
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'thecase'
+      MYSQL_ROOT_PASSWORD: 'root'
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+  thecase:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - maildev
+    ports:
+      - "5000:5000"
+    environment:
+      TZ: UTC
+      NODE_ENV: development
+
+      DB_LOG: 'true'
+      DB_TYPE: 'mysql'
+      DB_HOSTNAME: 'db'
+      DB_USERNAME: 'root'
+      DB_PASSWORD: 'root'
+      DB_DATABASE: 'thecase'
+      DB_PORT: 3306
+
+      EMAIL_SERVICE: 'test'
+      EMAIL_HOST: 'maildev'
+      EMAIL_PORT: '1025'
+      EMAIL_SECURE: 'false'
+      EMAIL_AUTH_USER: ~
+      EMAIL_AUTH_PASS: ~
+      EMAIL_SENDER: 'No reply <test@no-mail.com>'
+      EMAIL_DEBUG: 'false'
